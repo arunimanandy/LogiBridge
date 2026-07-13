@@ -1,0 +1,54 @@
+---
+- name: Deploy LogiEdge inference service
+  hosts: logibridge_trucks
+  become: true
+
+  tasks:
+    - name: Create /opt/logibridge directory if not present
+      ansible.builtin.file:
+        path: /opt/logibridge
+        state: directory
+        mode: "0755"
+
+    - name: Copy new model file to /opt/logibridge/model.tflite
+      ansible.builtin.copy:
+        src: ../inference/model.tflite
+        dest: /opt/logibridge/model.tflite
+        mode: "0644"
+
+    - name: Copy updated reference_dist.json
+      ansible.builtin.copy:
+        src: ../monitoring/reference_dist.json
+        dest: /opt/logibridge/reference_dist.json
+        mode: "0644"
+
+    - name: Stop the running inference container if running
+      community.docker.docker_container:
+        name: logibridge_inference
+        state: absent
+      when: force_redeploy | default(false) | bool
+
+    - name: Pull updated container image from local Docker registry
+      community.docker.docker_image:
+        name: localhost:5000/logibridge-inference
+        tag: latest
+        source: pull
+
+    - name: Start inference container with environment variables
+      community.docker.docker_container:
+        name: logibridge_inference
+        image: localhost:5000/logibridge-inference:latest
+        state: started
+        restart_policy: unless-stopped
+        network_mode: host
+        env:
+          MODEL_PATH: /opt/logibridge/model.tflite
+          STATS_PATH: /opt/logibridge/training_stats.npy
+          TRUCK_ID: TRUCK_001
+          MQTT_HOST: localhost
+        volumes:
+          - /opt/logibridge:/opt/logibridge
+
+    - name: Wait 15 seconds and verify container is running
+      ansible.builtin.shell: "sleep 15 && docker container inspect logibridge_inference | grep -q '\"Running\": true'"
+      changed_when: false

@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.log
+*.mp4
+.DS_Store
+training/*.npz
+training/models/fp32_saved_model/
+training/models/pruned_saved_model/
