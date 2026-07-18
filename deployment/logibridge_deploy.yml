@@ -28,16 +28,20 @@
         state: absent
       when: force_redeploy | default(false) | bool
 
-    - name: Pull updated container image from local Docker registry
-      community.docker.docker_image:
-        name: localhost:5000/logibridge-inference
-        tag: latest
-        source: pull
+    - name: Verify local image exists
+      community.docker.docker_image_info:
+        name: logibridge-inference:latest
+      register: image_info
+
+    - name: Fail if image is missing
+      ansible.builtin.fail:
+        msg: "Local Docker image logibridge-inference:latest not found."
+      when: image_info.images | length == 0
 
     - name: Start inference container with environment variables
       community.docker.docker_container:
         name: logibridge_inference
-        image: localhost:5000/logibridge-inference:latest
+        image: logibridge-inference:latest
         state: started
         restart_policy: unless-stopped
         network_mode: host
@@ -50,5 +54,5 @@
           - /opt/logibridge:/opt/logibridge
 
     - name: Wait 15 seconds and verify container is running
-      ansible.builtin.shell: "sleep 15 && docker container inspect logibridge_inference | grep -q '\"Running\": true'"
+      ansible.builtin.shell: 'sleep 15 && docker container inspect logibridge_inference | grep -q ''"Running": true'''
       changed_when: false

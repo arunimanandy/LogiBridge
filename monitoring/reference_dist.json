@@ -9,8 +9,8 @@
   "distribution": [
     1e-06,
     1e-06,
-    1e-06,
-    1.0
+    1.0,
+    1e-06
   ],
-  "source": "replace with 300 clean Normal-class inference outputs"
+  "source": "300 normal inference outputs"
 }
