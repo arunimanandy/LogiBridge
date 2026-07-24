@@ -92,11 +92,3 @@ python training/train_model.py --data training/logiedge_dataset.npz --out traini
 python training/convert_ptq.py --saved_model training/models/fp32_saved_model --data training/logiedge_dataset.npz --out training/models/model_ptq_int8.tflite
 python optimisation/benchmark.py --data training/logiedge_dataset.npz --models training/models
 ```
-
-## Final LMS submission
-
-Submit exactly three items:
-
-1. Private GitHub repository URL with instructor added as collaborator.
-2. Demo video link in `demo/demo_video_link.txt` and in the report.
-3. Final PDF report named `GROUPNO_LogiEdge_Final.pdf`.
