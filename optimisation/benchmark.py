@@ -45,6 +45,7 @@ def main():
     X, y = data["X"].astype(np.float32), data["y"].astype(np.int64)
     y_eval = y[10:210]
     model_paths = {
+        "M1_FP32": Path(args.models) / "model_fp32.tflite",
         "M2_PTQ_INT8": Path(args.models) / "model_ptq_int8.tflite",
         "M3_PRUNED_INT8": Path(args.models) / "model_pruned_int8.tflite",
     }

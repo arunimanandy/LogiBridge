@@ -28,15 +28,10 @@
         state: absent
       when: force_redeploy | default(false) | bool
 
-    - name: Verify local image exists
-      community.docker.docker_image_info:
-        name: logibridge-inference:latest
-      register: image_info
-
-    - name: Fail if image is missing
-      ansible.builtin.fail:
-        msg: "Local Docker image logibridge-inference:latest not found."
-      when: image_info.images | length == 0
+    - name: Pull updated container image from local Docker registry
+      community.docker.docker_image:
+        name: localhost:5000/logibridge-inference:latest
+        source: pull
 
     - name: Start inference container with environment variables
       community.docker.docker_container:
@@ -47,6 +42,7 @@
         network_mode: host
         env:
           MODEL_PATH: /opt/logibridge/model.tflite
+          REFERENCE_DIST_PATH: /opt/logibridge/reference_dist.json
           STATS_PATH: /opt/logibridge/training_stats.npy
           TRUCK_ID: TRUCK_001
           MQTT_HOST: localhost
