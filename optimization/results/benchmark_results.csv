@@ -1,4 +1,0 @@
-variant,mean_latency_ms,p95_latency_ms,model_size_kb,accuracy_percent,class2_recall_percent,energy_mj
-M1_FP32,0.011,0.017,5.3,100.00,100.00,0.031
-M2_PTQ_INT8,0.009,0.016,4.6,100.00,100.00,0.028
-M3_PRUNED_INT8,0.011,0.026,4.5,98.00,0.00,0.033
